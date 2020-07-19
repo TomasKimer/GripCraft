@@ -1,77 +1,60 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-sealed class TerrainGenerator : MonoBehaviour
+sealed class BlockTerrainChunk : MonoBehaviour
 {
-	// CONSTANTS
-
-	private const int TERRAIN_WIDTH     = 64;
-	private const int TERRAIN_HEIGHT    = 32;
-	private const int VERTICES_PER_FACE = 4;
-
-	// CONFIGURATION
-
-	[SerializeField] float    m_PerlinScale  = 1f;
-	[SerializeField] Vector2  m_PerlinOffset = Vector2.zero;
-
 	// PRIVATE MEMBERS
 
-	private readonly bool[,,] m_TerrainData  = new bool[TERRAIN_WIDTH, TERRAIN_HEIGHT, TERRAIN_WIDTH];
+	private bool[,,]          m_Heightmap;
+	private int               m_Width;
+	private int               m_Height;
+	private float             m_PerlinScale; 
+	private Vector2           m_PerlinOffset;
 	private MeshFilter        m_MeshFilter;
 	private MeshCollider      m_MeshCollider;
 	private Mesh              m_Mesh;
 	private List<Vector3>     m_Vertices     = new List<Vector3>();
 	private List<int>         m_Triangles    = new List<int>();
 
-	// MONOBEHAVIOUR INTERFACE
+	// PUBLIC METHODS
 
-	private void Awake()
+	public void Initialize(int width, int height, float perlinScale, Vector2 perlinOffset)
 	{
-		m_MeshFilter   = GetComponent<MeshFilter>();
-		m_MeshCollider = GetComponent<MeshCollider>();
-		m_Mesh         = new Mesh();
+		m_Width        = width;
+		m_Height       = height;
+		m_PerlinScale  = perlinScale;
+		m_PerlinOffset = perlinOffset;
+
+		m_Heightmap    = new bool[m_Width, m_Height, m_Width];
 	}
 
-	private void OnEnable()
+	public void GenerateHeightmap(int posX, int posZ)
 	{
-		GenerateHeightmap();
-		UpdateMesh();
-	}
-
-	private void GenerateHeightmap()
-	{
-		for (int x = 0; x < TERRAIN_WIDTH; ++x)
+		for (int x = 0; x < m_Width; ++x)
 		{
-			for (int z = 0; z < TERRAIN_WIDTH; ++z)
+			for (int z = 0; z < m_Width; ++z)
 			{
-				var perlinCoordX = (float)x / TERRAIN_WIDTH * m_PerlinScale + m_PerlinOffset.x;
-				var perlinCoordY = (float)z / TERRAIN_WIDTH * m_PerlinScale + m_PerlinOffset.y;
-				var perlinSample = Mathf.PerlinNoise(perlinCoordX, perlinCoordY);
+				var height = GetTerrainHeight(posX + x, posZ + z);
 
-				var height = Mathf.FloorToInt(perlinSample * TERRAIN_HEIGHT);
-
-				for (int y = 0; y < TERRAIN_HEIGHT; ++y)
+				for (int y = 0; y < m_Height; ++y)
 				{
-					m_TerrainData[x, y, z] = y <= height;
+					m_Heightmap[x, y, z] = y <= height;
 				}
 			}
 		}
 	}
 
-	private void UpdateMesh()
+	public void UpdateMesh()
 	{
-		m_Vertices.Clear();
-		m_Triangles.Clear();
-
 		var pos = new Vector3();
 
-		for (int x = 0; x < TERRAIN_WIDTH; ++x)
+		for (int x = 0; x < m_Width; ++x)
 		{
-			for (int z = 0; z < TERRAIN_WIDTH; ++z)
+			for (int z = 0; z < m_Width; ++z)
 			{
-				for (int y = 0; y < TERRAIN_HEIGHT; ++y)
+				for (int y = 0; y < m_Height; ++y)
 				{
-					if (m_TerrainData[x, y, z] == false)
+					if (m_Heightmap[x, y, z] == false)
 						continue;
 
 					pos.x = x;
@@ -140,6 +123,29 @@ sealed class TerrainGenerator : MonoBehaviour
 
 		m_MeshFilter.mesh         = m_Mesh;
 		m_MeshCollider.sharedMesh = m_Mesh;
+		
+		m_Vertices.Clear();
+		m_Triangles.Clear();
+	}
+
+	// MONOBEHAVIOUR INTERFACE
+
+	private void Awake()
+	{
+		m_MeshFilter   = GetComponent<MeshFilter>();
+		m_MeshCollider = GetComponent<MeshCollider>();
+		m_Mesh         = new Mesh();
+	}
+
+	// PRIVATE METHODS
+
+	private int GetTerrainHeight(int x, int z)
+	{
+		var perlinCoordX = x * m_PerlinScale + m_PerlinOffset.x;
+		var perlinCoordY = z * m_PerlinScale + m_PerlinOffset.y;
+		var perlinSample = Mathf.PerlinNoise(perlinCoordX, perlinCoordY);
+
+		return Mathf.Clamp(Mathf.FloorToInt(perlinSample * m_Height), 0, m_Height - 1);
 	}
 
 	private void AddFaceVertices(Vector3 origin, Vector3[] vertices)
@@ -155,13 +161,15 @@ sealed class TerrainGenerator : MonoBehaviour
 		if (x < 0 || y < 0 || z < 0)
 			return false;
 
-		if (x >= TERRAIN_WIDTH || y >= TERRAIN_HEIGHT || z >= TERRAIN_WIDTH)
+		if (x >= m_Width || y >= m_Height || z >= m_Width)
 			return false;
 
-		return m_TerrainData[x, y, z];
+		return m_Heightmap[x, y, z];
 	}
 
 	// HELPERS
+
+	private const int VERTICES_PER_FACE = 4;
 
 	private static readonly Vector3[] LEFT_VERTICES = {
 		new Vector3(0, 0, 1),
