@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, ISceneComponent
 {
 	// CONFIGURATION
 
@@ -16,24 +15,23 @@ public class PlayerController : MonoBehaviour
 
 	// PRIVATE MEMBERS
 
+	private InputManager        m_InputManager;
 	private CharacterController m_CharacterController;
 	private float               m_VelocityY;
 	private float               m_HeadRotationX;
 
-	private Vector3             m_InputMoveDir;
-	private Vector2             m_InputLookDelta;
-	private bool                m_InputJump;
-	private bool                m_InputSprint;
+	// ISCENECOMPONENT INTERFACE
 
-	// MONOBEHAVIOUR INTERFACE
-
-	private void Awake()
+	void ISceneComponent.Initialize(MainScene scene)
 	{
+		m_InputManager        = scene.InputManager;
 		m_CharacterController = GetComponent<CharacterController>();
 
 		Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible   = false;
 	}
+
+	// MONOBEHAVIOUR INTERFACE
 
 	private void Update()
 	{
@@ -49,24 +47,15 @@ public class PlayerController : MonoBehaviour
 
 		if (m_CharacterController.isGrounded == true)
 		{
-			if (m_InputJump == true)
-			{
-				m_InputJump = false;
-				m_VelocityY = m_JumpHeight;
-			}
-			else
-			{
-				m_VelocityY = -1f;
-			}
+			m_VelocityY = m_InputManager.Jump ? m_JumpHeight : -1f;
 		}
 		else
 		{
-			m_InputJump = false;
 			m_VelocityY += Physics.gravity.y * deltaTime;
 		}
 
-		var     speed = m_InputSprint ? m_SprintSpeed : m_MoveSpeed;
-		var deltaMove = transform.TransformDirection(m_InputMoveDir) * speed;
+		var     speed = m_InputManager.Sprint ? m_SprintSpeed : m_MoveSpeed;
+		var deltaMove = transform.TransformDirection(m_InputManager.MoveDir) * speed;
 		deltaMove.y  += m_VelocityY;
 
 		m_CharacterController.Move(deltaMove * deltaTime);
@@ -74,36 +63,11 @@ public class PlayerController : MonoBehaviour
 
 	private void UpdateLook()
 	{
-		var lookDelta = m_InputLookDelta * m_LookSensitivity * Time.deltaTime;
+		var lookDelta = m_InputManager.LookDelta * m_LookSensitivity * Time.deltaTime;
 
 		transform.Rotate(lookDelta.x * Vector3.up);
 
 		m_HeadRotationX = Mathf.Clamp(m_HeadRotationX - lookDelta.y, -90f, 90f);
 		m_HeadTransform.localRotation = Quaternion.Euler(m_HeadRotationX, 0f, 0f);
-	}
-
-	// INPUT SYSTEM CALLBACKS
-
-	public void OnInputMove(InputAction.CallbackContext context)
-    {
-		var moveDir = context.ReadValue<Vector2>();
-
-		m_InputMoveDir.x = moveDir.x;
-		m_InputMoveDir.z = moveDir.y;
-	}
-
-	public void OnInputLook(InputAction.CallbackContext context)
-	{
-		m_InputLookDelta = context.ReadValue<Vector2>();
-	}
-
-	public void OnInputJump(InputAction.CallbackContext context)
-    {
-		m_InputJump = context.ReadValue<float>() > 0f;
-    }
-
-	public void OnInputSprint(InputAction.CallbackContext context)
-	{
-		m_InputSprint = context.ReadValue<float>() > 0f;
 	}
 }
