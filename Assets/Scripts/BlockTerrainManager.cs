@@ -5,18 +5,26 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 {
 	// CONFIGURATION
 
+	[Header("Block setup")]
+	[SerializeField] BlockSettings     m_BlockSettings = null;
+
 	[Header("Chunk setup")]
-	[SerializeField] BlockTerrainChunk m_TerrainChunk        = null;
+	[SerializeField] BlockTerrainChunk m_TerrainChunk  = null;
 	[Range(8, 128)]        
-	[SerializeField] int               m_ChunkWidth          = 16;
+	[SerializeField] int               m_ChunkWidth    = 16;
 	[Range(8, 128)]
-	[SerializeField] int               m_ChunkHeight         = 32;
+	[SerializeField] int               m_ChunkHeight   = 32;
 	[Range(1, 32)]
-	[SerializeField] int               m_ChunkDistance       = 10;
+	[SerializeField] int               m_ChunkDistance = 10;
 
 	[Header("Noise setup")]
-	[SerializeField] float             m_PerlinScale         = 0.025f;
-	[SerializeField] Vector2           m_PerlinOffset        = Vector2.zero;
+	[SerializeField] float             m_PerlinScale   = 0.025f;
+	[SerializeField] Vector2           m_PerlinOffset  = Vector2.zero;
+
+	// PUBLIC MEMBERS
+
+	public  int                        ChunkWidth  => m_ChunkWidth;
+	public  int                        ChunkHeight => m_ChunkHeight;
 
 	// PRIVATE MEMBERS
 
@@ -31,7 +39,6 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	void ISceneComponent.Initialize(MainScene scene)
 	{
 		m_PlayerTransform = scene.PlayerController.transform;
-		m_PlayerTransform.position = new Vector3(m_ChunkWidth / 2, m_ChunkHeight + 10, m_ChunkWidth / 2);
 
 		m_TerrainChunk.gameObject.SetActive(false);
 	}
@@ -39,6 +46,13 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	// MONOBEHAVIOUR INTERFACE
 
 	private void Update()
+	{
+		UpdateChunks();
+	}	
+
+	// PRIVATE METHODS
+
+	private void UpdateChunks()
 	{
 		var playerChunkPosition = GetPlayerChunkPosition();
 		if (playerChunkPosition == m_PlayerChunkPosition)
@@ -48,9 +62,7 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		
 		CreateNewChunks();
 		RemoveFarChunks();
-	}	
-
-	// PRIVATE METHODS
+	}
 
 	private void CreateNewChunks()
 	{
@@ -98,7 +110,7 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		newChunk.gameObject.SetActive(true);
 		newChunk.name = $"Chunk {chunkPos}";
 
-		newChunk.Initialize(m_ChunkWidth, m_ChunkHeight, m_PerlinScale, m_PerlinOffset);
+		newChunk.Initialize(m_ChunkWidth, m_ChunkHeight, m_PerlinScale, m_PerlinOffset, m_BlockSettings);
 		newChunk.GenerateHeightmap(worldX, worldZ);
 		newChunk.UpdateMesh();
 

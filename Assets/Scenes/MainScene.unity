@@ -371,6 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5c502197bc1bc41ad6bd9d78103275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BlockSettings: {fileID: 11400000, guid: 5d2531d6e2ed0f54fb489b308c6493a3, type: 2}
   m_TerrainChunk: {fileID: 1730905363}
   m_ChunkWidth: 16
   m_ChunkHeight: 32

@@ -9,19 +9,35 @@ sealed class MainScene : MonoBehaviour
 {
 	// PUBLIC MEMBERS
 
-	public PlayerController PlayerController { get; private set; }
-	public InputManager     InputManager     { get; private set; }
+	public PlayerController    PlayerController { get; private set; }
+	public InputManager        InputManager     { get; private set; }
+	public BlockTerrainManager TerrainManager { get; private set; }
 
 	// MONOBEHAVIOUR INTERFACE
 
 	private void Awake()
 	{
+		InitializeSceneComponents();
+
+		SetPlayerPosition();
+	}
+
+	// PRIVATE METHODS
+
+	private void InitializeSceneComponents()
+	{
 		var sceneComponents = GetComponentsInChildren<ISceneComponent>(true);
 
-		PlayerController = FindComponent<PlayerController>(sceneComponents);
-		InputManager     = FindComponent<InputManager    >(sceneComponents);
+		PlayerController = FindComponent<PlayerController   >(sceneComponents);
+		InputManager     = FindComponent<InputManager       >(sceneComponents);
+		TerrainManager   = FindComponent<BlockTerrainManager>(sceneComponents);
 
 		System.Array.ForEach(sceneComponents, component => component.Initialize(this));
+	}
+
+	private void SetPlayerPosition()
+	{
+		PlayerController.transform.position = new Vector3(TerrainManager.ChunkWidth / 2, TerrainManager.ChunkHeight + 10, TerrainManager.ChunkWidth / 2);
 	}
 
 	// HELPERS

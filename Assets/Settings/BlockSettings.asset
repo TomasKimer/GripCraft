@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58359d4da897bcf4dbdaafd69dc9e913, type: 3}
+  m_Name: BlockSettings
+  m_EditorClassIdentifier: 
+  m_BlockSettings:
+  - BlockType: 1
+    TileTop: 0
+    TileSide: 1
+    TileBottom: 3
+    FromHeight: 0
+  - BlockType: 2
+    TileTop: 3
+    TileSide: 3
+    TileBottom: 3
+    FromHeight: 0
+  - BlockType: 3
+    TileTop: 4
+    TileSide: 5
+    TileBottom: 3
+    FromHeight: 0
+  - BlockType: 4
+    TileTop: 2
+    TileSide: 2
+    TileBottom: 2
+    FromHeight: 0
+  m_TileSize: 16
+  m_TileSettings:
+  - Tile: 0
+    Position: {x: 0, y: 0}
+  - Tile: 1
+    Position: {x: 3, y: 0}
+  - Tile: 2
+    Position: {x: 1, y: 0}
+  - Tile: 3
+    Position: {x: 2, y: 0}
+  - Tile: 4
+    Position: {x: 4, y: 2}
+  - Tile: 5
+    Position: {x: 4, y: 4}

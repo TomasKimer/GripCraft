@@ -11,20 +11,23 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	private int               m_Height;
 	private float             m_PerlinScale; 
 	private Vector2           m_PerlinOffset;
+	private BlockSettings     m_BlockSettings;
 	private MeshFilter        m_MeshFilter;
 	private MeshCollider      m_MeshCollider;
 	private Mesh              m_Mesh;
 	private List<Vector3>     m_Vertices     = new List<Vector3>();
-	private List<int>         m_Triangles    = new List<int>();
+	private List<int>         m_Indices      = new List<int>();
+	private List<Vector2>     m_UVs          = new List<Vector2>();
 
 	// PUBLIC METHODS
 
-	public void Initialize(int width, int height, float perlinScale, Vector2 perlinOffset)
+	public void Initialize(int width, int height, float perlinScale, Vector2 perlinOffset, BlockSettings blockSettings)
 	{
-		m_Width        = width;
-		m_Height       = height;
-		m_PerlinScale  = perlinScale;
-		m_PerlinOffset = perlinOffset;
+		m_Width         = width;
+		m_Height        = height;
+		m_PerlinScale   = perlinScale;
+		m_PerlinOffset  = perlinOffset;
+		m_BlockSettings = blockSettings;
 
 		m_Heightmap    = new bool[m_Width, m_Height, m_Width];
 	}
@@ -63,40 +66,47 @@ sealed class BlockTerrainChunk : MonoBehaviour
 					pos.z = z;
 
 					var faceCount = 0;
+					var blockInfo = m_BlockSettings.GetBlockInfo(EBlockType.Grass);
 
-					if (IsTerrain(x - 1, y, z) == false)
+					if (IsEmpty(x - 1, y, z))
 					{
 						AddFaceVertices(pos, LEFT_VERTICES);
+						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsTerrain(x + 1, y, z) == false)
+					if (IsEmpty(x + 1, y, z))
 					{
 						AddFaceVertices(pos, RIGHT_VERTICES);
+						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsTerrain(x, y, z - 1) == false)
+					if (IsEmpty(x, y, z - 1))
 					{
 						AddFaceVertices(pos, FRONT_VERTICES);
+						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsTerrain(x, y, z + 1) == false)
+					if (IsEmpty(x, y, z + 1))
 					{
 						AddFaceVertices(pos, BACK_VERTICES);
+						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsTerrain(x, y + 1, z) == false)
+					if (IsEmpty(x, y + 1, z))
 					{
 						AddFaceVertices(pos, TOP_VERTICES);
+						m_UVs.AddRange(blockInfo.TopUVs);
 						faceCount += 1;
 					}
 
-					if (IsTerrain(x, y - 1, z) == false)
+					if (IsEmpty(x, y - 1, z))
 					{
 						AddFaceVertices(pos, BOTTOM_VERTICES);
+						m_UVs.AddRange(blockInfo.BottomUVs);
 						faceCount += 1;
 					}
 
@@ -105,13 +115,13 @@ sealed class BlockTerrainChunk : MonoBehaviour
 					{
 						var idx = startIdx + i * VERTICES_PER_FACE;
 
-						m_Triangles.Add(idx);
-						m_Triangles.Add(idx + 1);
-						m_Triangles.Add(idx + 2);
+						m_Indices.Add(idx);
+						m_Indices.Add(idx + 1);
+						m_Indices.Add(idx + 2);
 
-						m_Triangles.Add(idx);
-						m_Triangles.Add(idx + 2);
-						m_Triangles.Add(idx + 3);
+						m_Indices.Add(idx);
+						m_Indices.Add(idx + 2);
+						m_Indices.Add(idx + 3);
 					}
 				}
 			}
@@ -120,8 +130,10 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		SetMeshIndexFormat(m_Vertices.Count);
 
 		m_Mesh.Clear();
-		m_Mesh.vertices = m_Vertices.ToArray();
-		m_Mesh.triangles = m_Triangles.ToArray();
+		m_Mesh.vertices  = m_Vertices.ToArray();
+		m_Mesh.triangles = m_Indices.ToArray();
+		m_Mesh.uv        = m_UVs.ToArray();
+
 		m_Mesh.Optimize();
 		m_Mesh.RecalculateNormals();
 
@@ -129,7 +141,8 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		m_MeshCollider.sharedMesh = m_Mesh;
 		
 		m_Vertices.Clear();
-		m_Triangles.Clear();
+		m_Indices.Clear();
+		m_UVs.Clear();
 	}
 
 	// MONOBEHAVIOUR INTERFACE
@@ -160,15 +173,15 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		}
 	}
 
-	private bool IsTerrain(int x, int y, int z)
+	private bool IsEmpty(int x, int y, int z)
 	{
 		if (x < 0 || y < 0 || z < 0)
-			return false;
+			return true;
 
 		if (x >= m_Width || y >= m_Height || z >= m_Width)
-			return false;
+			return true;
 
-		return m_Heightmap[x, y, z];
+		return m_Heightmap[x, y, z] == false;
 	}
 
 	private void SetMeshIndexFormat(int vertexCount)
