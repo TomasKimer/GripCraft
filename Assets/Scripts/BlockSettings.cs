@@ -6,7 +6,7 @@ enum EBlockType
 	None,
 	Grass,
 	Dirt,
-	Ice,
+	Snow,
 	Stone
 }
 
@@ -39,8 +39,8 @@ sealed class BlockSettings : ScriptableObject
 		GrassSide,
 		Stone,
 		Dirt,
-		Ice,
-		IceSide
+		Snow,
+		SnowSide
 	}
 
 	[System.Serializable]
@@ -67,6 +67,7 @@ sealed class BlockSettings : ScriptableObject
 
 	[Header("Tiles")]
 	[SerializeField] int          m_TileSize      = 16;
+	[SerializeField] float        m_TileUVOffset  = 0.001f;
 	[SerializeField] TileSetup[]  m_TileSettings  = null;
 
 	// PRIVATE MEMBERS
@@ -110,10 +111,10 @@ sealed class BlockSettings : ScriptableObject
 
 		return new Vector2[]
 		{
-			new Vector2((position.x    ) / (float)m_TileSize, (position.y    ) / (float)m_TileSize),
-			new Vector2((position.x    ) / (float)m_TileSize, (position.y + 1) / (float)m_TileSize),
-			new Vector2((position.x + 1) / (float)m_TileSize, (position.y + 1) / (float)m_TileSize),
-			new Vector2((position.x + 1) / (float)m_TileSize, (position.y    ) / (float)m_TileSize)
+			new Vector2((position.x    ) / (float)m_TileSize + m_TileUVOffset, (position.y    ) / (float)m_TileSize + m_TileUVOffset),
+			new Vector2((position.x    ) / (float)m_TileSize + m_TileUVOffset, (position.y + 1) / (float)m_TileSize - m_TileUVOffset),
+			new Vector2((position.x + 1) / (float)m_TileSize - m_TileUVOffset, (position.y + 1) / (float)m_TileSize - m_TileUVOffset),
+			new Vector2((position.x + 1) / (float)m_TileSize - m_TileUVOffset, (position.y    ) / (float)m_TileSize + m_TileUVOffset)
 		};
 	}
 }

@@ -34,6 +34,7 @@ MonoBehaviour:
     TileBottom: 2
     FromHeight: 0
   m_TileSize: 16
+  m_TileUVOffset: 0.001
   m_TileSettings:
   - Tile: 0
     Position: {x: 0, y: 0}
@@ -44,6 +45,6 @@ MonoBehaviour:
   - Tile: 3
     Position: {x: 2, y: 0}
   - Tile: 4
-    Position: {x: 4, y: 2}
+    Position: {x: 2, y: 4}
   - Tile: 5
     Position: {x: 4, y: 4}
