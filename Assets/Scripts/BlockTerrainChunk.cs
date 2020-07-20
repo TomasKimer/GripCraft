@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using IndexFormat = UnityEngine.Rendering.IndexFormat;
 
 sealed class BlockTerrainChunk : MonoBehaviour
 {
@@ -116,9 +117,12 @@ sealed class BlockTerrainChunk : MonoBehaviour
 			}
 		}
 
+		SetMeshIndexFormat(m_Vertices.Count);
+
 		m_Mesh.Clear();
 		m_Mesh.vertices = m_Vertices.ToArray();
 		m_Mesh.triangles = m_Triangles.ToArray();
+		m_Mesh.Optimize();
 		m_Mesh.RecalculateNormals();
 
 		m_MeshFilter.mesh         = m_Mesh;
@@ -165,6 +169,15 @@ sealed class BlockTerrainChunk : MonoBehaviour
 			return false;
 
 		return m_Heightmap[x, y, z];
+	}
+
+	private void SetMeshIndexFormat(int vertexCount)
+	{
+		var targetFormat = vertexCount > ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
+		if (targetFormat == m_Mesh.indexFormat)
+			return;
+		
+		m_Mesh.indexFormat = targetFormat;
 	}
 
 	// HELPERS

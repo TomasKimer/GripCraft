@@ -7,15 +7,15 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	[Header("Chunk setup")]
 	[SerializeField] BlockTerrainChunk m_TerrainChunk        = null;
-	[Range(8, 64)]        
+	[Range(8, 128)]        
 	[SerializeField] int               m_ChunkWidth          = 16;
-	[Range(8, 32)]
+	[Range(8, 128)]
 	[SerializeField] int               m_ChunkHeight         = 32;
-	[Range(1, 20)]
+	[Range(1, 32)]
 	[SerializeField] int               m_ChunkDistance       = 10;
 
 	[Header("Noise setup")]
-	[SerializeField] float             m_PerlinScale         = 2f;
+	[SerializeField] float             m_PerlinScale         = 0.025f;
 	[SerializeField] Vector2           m_PerlinOffset        = Vector2.zero;
 
 	// PRIVATE MEMBERS
@@ -31,6 +31,7 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	void ISceneComponent.Initialize(MainScene scene)
 	{
 		m_PlayerTransform = scene.PlayerController.transform;
+		m_PlayerTransform.position = new Vector3(m_ChunkWidth / 2, m_ChunkHeight + 10, m_ChunkWidth / 2);
 
 		m_TerrainChunk.gameObject.SetActive(false);
 	}
