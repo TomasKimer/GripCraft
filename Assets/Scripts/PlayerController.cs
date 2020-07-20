@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour, ISceneComponent
 	[SerializeField] float      m_JumpHeight  = 6f;
 
 	[Header("Look")]
-	[SerializeField] float      m_LookSensitivity = 1f;
+	[SerializeField] float      m_LookSensitivity = 0.2f;
 	[SerializeField] Transform  m_HeadTransform   = null;
 
 	// PRIVATE MEMBERS
@@ -63,7 +63,7 @@ public class PlayerController : MonoBehaviour, ISceneComponent
 
 	private void UpdateLook()
 	{
-		var lookDelta = m_InputManager.LookDelta * m_LookSensitivity * Time.deltaTime;
+		var lookDelta = m_InputManager.LookDelta * m_LookSensitivity;
 
 		transform.Rotate(lookDelta.x * Vector3.up);
 
