@@ -163,7 +163,7 @@ MonoBehaviour:
   m_MoveSpeed: 6
   m_SprintSpeed: 15
   m_JumpHeight: 6
-  m_LookSensitivity: 20
+  m_LookSensitivity: 0.2
   m_HeadTransform: {fileID: 1065859629}
 --- !u!143 &9139416728653439319
 CharacterController:
@@ -179,7 +179,7 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.5
+  m_StepOffset: 1.5
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
