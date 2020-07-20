@@ -374,6 +374,7 @@ MonoBehaviour:
   m_TerrainChunk: {fileID: 1730905363}
   m_ChunkWidth: 16
   m_ChunkHeight: 32
+  m_ChunkDistance: 10
   m_PerlinScale: 0.02945
   m_PerlinOffset: {x: 73.73, y: 6562}
 --- !u!1 &1068939428
@@ -958,15 +959,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8269406444143539206, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8269406444143539206, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 40
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 8269406444143539206, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 8269406444143539206, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
       propertyPath: m_LocalRotation.x
@@ -999,10 +1000,6 @@ PrefabInstance:
     - target: {fileID: 8269406444143539206, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9139416728653439319, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
-      propertyPath: m_StepOffset
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff76b2bd68132ff40bb438944630a841, type: 3}
