@@ -4,9 +4,17 @@ using IndexFormat = UnityEngine.Rendering.IndexFormat;
 
 sealed class BlockTerrainChunk : MonoBehaviour
 {
+	// PRIVATE STRUCTS
+
+	private struct BlockData
+	{
+		public EBlockType BlockType;
+//		public float      CurrentHealt; // TODO
+	}
+
 	// PRIVATE MEMBERS
 
-	private bool[,,]          m_Heightmap;
+	private BlockData[,,]     m_BlockData;
 	private int               m_Width;
 	private int               m_Height;
 	private float             m_PerlinScale; 
@@ -29,7 +37,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		m_PerlinOffset  = perlinOffset;
 		m_BlockSettings = blockSettings;
 
-		m_Heightmap    = new bool[m_Width, m_Height, m_Width];
+		m_BlockData     = new BlockData[m_Width, m_Height, m_Width];
 	}
 
 	public void GenerateHeightmap(int posX, int posZ)
@@ -42,7 +50,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 				for (int y = 0; y < m_Height; ++y)
 				{
-					m_Heightmap[x, y, z] = y <= height;
+					m_BlockData[x, y, z].BlockType = GetBlockTypeForHeight(y, height);
 				}
 			}
 		}
@@ -58,7 +66,8 @@ sealed class BlockTerrainChunk : MonoBehaviour
 			{
 				for (int y = 0; y < m_Height; ++y)
 				{
-					if (m_Heightmap[x, y, z] == false)
+					var blockType = m_BlockData[x, y, z].BlockType;
+					if (blockType == EBlockType.None)
 						continue;
 
 					pos.x = x;
@@ -66,7 +75,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 					pos.z = z;
 
 					var faceCount = 0;
-					var blockInfo = m_BlockSettings.GetBlockInfo(EBlockType.Grass);
+					var blockInfo = m_BlockSettings.GetBlockInfo(blockType);
 
 					if (IsEmpty(x - 1, y, z))
 					{
@@ -165,6 +174,23 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		return Mathf.Clamp(Mathf.FloorToInt(perlinSample * m_Height), 0, m_Height - 1);
 	}
 
+	private EBlockType GetBlockTypeForHeight(int height, int currMaxHeight)
+	{
+		if (height > currMaxHeight)
+			return EBlockType.None;
+
+		var fraction = height / (float)m_Height;
+
+		if (fraction < 0.2f) // TODO values from settings
+			return EBlockType.Stone;
+		if (fraction < 0.4f)
+			return EBlockType.Dirt;
+		if (fraction < 0.6f)
+			return EBlockType.Grass;
+
+		return EBlockType.Snow;
+	}
+
 	private void AddFaceVertices(Vector3 origin, Vector3[] vertices)
 	{
 		for (int idx = 0; idx < VERTICES_PER_FACE; ++idx)
@@ -181,7 +207,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		if (x >= m_Width || y >= m_Height || z >= m_Width)
 			return true;
 
-		return m_Heightmap[x, y, z] == false;
+		return m_BlockData[x, y, z].BlockType == EBlockType.None;
 	}
 
 	private void SetMeshIndexFormat(int vertexCount)
