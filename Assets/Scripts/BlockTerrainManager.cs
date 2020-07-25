@@ -23,8 +23,9 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	// PUBLIC MEMBERS
 
-	public  int                        ChunkWidth  => m_ChunkWidth;
-	public  int                        ChunkHeight => m_ChunkHeight;
+	public  int                        ChunkWidth    => m_ChunkWidth;
+	public  int                        ChunkHeight   => m_ChunkHeight;
+	public  BlockSettings              BlockSettings => m_BlockSettings;
 
 	// PRIVATE MEMBERS
 
@@ -33,6 +34,27 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	private Dictionary<Vector2Int, BlockTerrainChunk> m_ActiveChunks   = new Dictionary<Vector2Int, BlockTerrainChunk>();
 	private List<Vector2Int>                          m_ChunksToRemove = new List<Vector2Int>();
+
+	// PUBLIC METHODS
+
+	public void AddBlock(Vector2Int chunkPos, int posX, int posY, int posZ, EBlockType blockType)
+	{
+		var chunk = m_ActiveChunks[chunkPos];
+
+		chunk.SetBlock(posX, posY, posZ, blockType);
+	}
+
+	public void AddBlock(Vector3Int position, EBlockType blockType)
+	{
+		var chunkPosition = new Vector2Int(position.x / m_ChunkWidth, position.z / m_ChunkWidth);
+
+		var positionInChunkX = position.x - chunkPosition.x * m_ChunkWidth;
+		var positionInChunkY = position.y;
+		var positionInChunkZ = position.z - chunkPosition.y * m_ChunkWidth;
+
+		var chunk = m_ActiveChunks[chunkPosition];
+		chunk.SetBlock(positionInChunkX, positionInChunkY, positionInChunkZ, blockType);
+	}
 
 	// ISCENECOMPONENT INTERFACE
 

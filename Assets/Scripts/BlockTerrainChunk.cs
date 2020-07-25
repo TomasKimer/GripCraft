@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using IndexFormat = UnityEngine.Rendering.IndexFormat;
 
+[RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
 sealed class BlockTerrainChunk : MonoBehaviour
 {
+	// CONSTANTS
+
+	private const int VERTICES_PER_FACE = 4;
+
 	// PRIVATE STRUCTS
 
 	private struct BlockData
@@ -56,15 +62,28 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		}
 	}
 
+	public void SetBlock(int x, int y, int z, EBlockType blockType)
+	{
+		if (x < 0 || y < 0 || z < 0)
+			return;
+
+		if (x >= m_Width || y >= m_Height || z >= m_Width)
+			return;
+
+		m_BlockData[x, y, z].BlockType = blockType;
+
+		UpdateMesh();
+	}
+
 	public void UpdateMesh()
 	{
 		var pos = new Vector3();
 
 		for (int x = 0; x < m_Width; ++x)
 		{
-			for (int z = 0; z < m_Width; ++z)
+			for (int y = 0; y < m_Height; ++y)
 			{
-				for (int y = 0; y < m_Height; ++y)
+				for (int z = 0; z < m_Width; ++z)
 				{
 					var blockType = m_BlockData[x, y, z].BlockType;
 					if (blockType == EBlockType.None)
@@ -77,44 +96,44 @@ sealed class BlockTerrainChunk : MonoBehaviour
 					var faceCount = 0;
 					var blockInfo = m_BlockSettings.GetBlockInfo(blockType);
 
-					if (IsEmpty(x - 1, y, z))
+					if (IsNone(x - 1, y, z))
 					{
-						AddFaceVertices(pos, LEFT_VERTICES);
+						AddFaceVertices(pos, BlockSettings.LEFT_VERTICES);
 						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsEmpty(x + 1, y, z))
+					if (IsNone(x + 1, y, z))
 					{
-						AddFaceVertices(pos, RIGHT_VERTICES);
+						AddFaceVertices(pos, BlockSettings.RIGHT_VERTICES);
 						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsEmpty(x, y, z - 1))
+					if (IsNone(x, y, z - 1))
 					{
-						AddFaceVertices(pos, FRONT_VERTICES);
+						AddFaceVertices(pos, BlockSettings.FRONT_VERTICES);
 						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsEmpty(x, y, z + 1))
+					if (IsNone(x, y, z + 1))
 					{
-						AddFaceVertices(pos, BACK_VERTICES);
+						AddFaceVertices(pos, BlockSettings.BACK_VERTICES);
 						m_UVs.AddRange(blockInfo.SideUVs);
 						faceCount += 1;
 					}
 
-					if (IsEmpty(x, y + 1, z))
+					if (IsNone(x, y + 1, z))
 					{
-						AddFaceVertices(pos, TOP_VERTICES);
+						AddFaceVertices(pos, BlockSettings.TOP_VERTICES);
 						m_UVs.AddRange(blockInfo.TopUVs);
 						faceCount += 1;
 					}
 
-					if (IsEmpty(x, y - 1, z))
+					if (IsNone(x, y - 1, z))
 					{
-						AddFaceVertices(pos, BOTTOM_VERTICES);
+						AddFaceVertices(pos, BlockSettings.BOTTOM_VERTICES);
 						m_UVs.AddRange(blockInfo.BottomUVs);
 						faceCount += 1;
 					}
@@ -193,13 +212,13 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	private void AddFaceVertices(Vector3 origin, Vector3[] vertices)
 	{
-		for (int idx = 0; idx < VERTICES_PER_FACE; ++idx)
+		for (int idx = 0; idx < vertices.Length; ++idx)
 		{
 			m_Vertices.Add(origin + vertices[idx]);
 		}
 	}
 
-	private bool IsEmpty(int x, int y, int z)
+	private bool IsNone(int x, int y, int z)
 	{
 		if (x < 0 || y < 0 || z < 0)
 			return true;
@@ -218,50 +237,4 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		
 		m_Mesh.indexFormat = targetFormat;
 	}
-
-	// HELPERS
-
-	private const int VERTICES_PER_FACE = 4;
-
-	private static readonly Vector3[] LEFT_VERTICES = {
-		new Vector3(0, 0, 1),
-		new Vector3(0, 1, 1),
-		new Vector3(0, 1, 0),
-		new Vector3(0, 0, 0)
-	};
-
-	private static readonly Vector3[] RIGHT_VERTICES = {
-		new Vector3(1, 0, 0),
-		new Vector3(1, 1, 0),
-		new Vector3(1, 1, 1),
-		new Vector3(1, 0, 1)
-	};
-
-	private static readonly Vector3[] FRONT_VERTICES = {
-		new Vector3(0, 0, 0),
-		new Vector3(0, 1, 0),
-		new Vector3(1, 1, 0),
-		new Vector3(1, 0, 0)
-	};
-
-	private static readonly Vector3[] BACK_VERTICES = {
-		new Vector3(1, 0, 1),
-		new Vector3(1, 1, 1),
-		new Vector3(0, 1, 1),
-		new Vector3(0, 0, 1)
-	};
-
-	private static readonly Vector3[] TOP_VERTICES = {
-		new Vector3(0, 1, 0),
-		new Vector3(0, 1, 1),
-		new Vector3(1, 1, 1),
-		new Vector3(1, 1, 0)
-	};
-
-	private static readonly Vector3[] BOTTOM_VERTICES = {
-		new Vector3(0, 0, 0),
-		new Vector3(1, 0, 0),
-		new Vector3(1, 0, 1),
-		new Vector3(0, 0, 1)
-	};
 }

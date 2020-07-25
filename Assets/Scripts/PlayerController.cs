@@ -13,6 +13,10 @@ public class PlayerController : MonoBehaviour, ISceneComponent
 	[SerializeField] float      m_LookSensitivity = 0.2f;
 	[SerializeField] Transform  m_HeadTransform   = null;
 
+	// PUBLIC MEMBERS
+
+	public  Transform           HeadTransform => m_HeadTransform;
+
 	// PRIVATE MEMBERS
 
 	private InputManager        m_InputManager;

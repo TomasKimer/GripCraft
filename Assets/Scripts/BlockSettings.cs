@@ -13,6 +13,50 @@ enum EBlockType
 [CreateAssetMenu(fileName = "BlockSettings", menuName = "Scriptable Objects/BlockSettings", order = 1)]
 sealed class BlockSettings : ScriptableObject
 {
+	// PUBLIC CONSTANTS
+
+	public static readonly Vector3[] LEFT_VERTICES = {
+		new Vector3(0, 0, 1),
+		new Vector3(0, 1, 1),
+		new Vector3(0, 1, 0),
+		new Vector3(0, 0, 0)
+	};
+
+	public static readonly Vector3[] RIGHT_VERTICES = {
+		new Vector3(1, 0, 0),
+		new Vector3(1, 1, 0),
+		new Vector3(1, 1, 1),
+		new Vector3(1, 0, 1)
+	};
+
+	public static readonly Vector3[] FRONT_VERTICES = {
+		new Vector3(0, 0, 0),
+		new Vector3(0, 1, 0),
+		new Vector3(1, 1, 0),
+		new Vector3(1, 0, 0)
+	};
+
+	public static readonly Vector3[] BACK_VERTICES = {
+		new Vector3(1, 0, 1),
+		new Vector3(1, 1, 1),
+		new Vector3(0, 1, 1),
+		new Vector3(0, 0, 1)
+	};
+
+	public static readonly Vector3[] TOP_VERTICES = {
+		new Vector3(0, 1, 0),
+		new Vector3(0, 1, 1),
+		new Vector3(1, 1, 1),
+		new Vector3(1, 1, 0)
+	};
+
+	public static readonly Vector3[] BOTTOM_VERTICES = {
+		new Vector3(0, 0, 0),
+		new Vector3(1, 0, 0),
+		new Vector3(1, 0, 1),
+		new Vector3(0, 0, 1)
+	};
+
 	// PUBLIC CLASSES
 
 	public class BlockInfo
