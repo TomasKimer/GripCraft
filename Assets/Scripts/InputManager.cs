@@ -12,9 +12,14 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 	public bool    Fire         { get; private set; }
 	public int     ChangeWeapon { get; private set; }
 
+	// SIGNALS
+
+	public event   System.Action QuickSave;
+
 	// PRIVATE MEMBERS
 
 	private float  m_JumpTime;
+	private int    m_QuickSaveFrame;
 
 	// ISCENECOMPONENT INTERFACE
 
@@ -70,5 +75,18 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 	public void OnChangeWeapon(InputAction.CallbackContext context)
 	{
 		ChangeWeapon = (int)context.ReadValue<Vector2>().y;
+	}
+
+	public void OnQuickSave(InputAction.CallbackContext context)
+	{
+		if (context.ReadValue<float>() <= 0f)
+			return;
+
+		// event is fired twice in the same frame
+		if (m_QuickSaveFrame == Time.frameCount)
+			return;
+		m_QuickSaveFrame = Time.frameCount;
+
+		QuickSave?.Invoke();
 	}
 }

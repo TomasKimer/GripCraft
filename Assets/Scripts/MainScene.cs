@@ -20,6 +20,15 @@ sealed class MainScene : MonoBehaviour
 		InitializeSceneComponents();
 
 		SetPlayerPosition();
+
+		InputManager.QuickSave += OnQuickSave;
+	}
+
+	// HANLDERS
+
+	private void OnQuickSave()
+	{
+		Debug.Log("TODO QuickSave");
 	}
 
 	// PRIVATE METHODS

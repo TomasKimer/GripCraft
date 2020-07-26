@@ -60,6 +60,14 @@
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "QuickSave",
+                    "type": "Button",
+                    "id": "1c47c4fe-7948-42c3-bb96-d6f78c2bce9e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -357,6 +365,17 @@
                     "processors": "NormalizeVector2,InvertVector2(invertX=false)",
                     "groups": "Keyboard&Mouse",
                     "action": "ChangeWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b60d0187-d956-41ea-b7c1-b65c11360506",
+                    "path": "<Keyboard>/f5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "QuickSave",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

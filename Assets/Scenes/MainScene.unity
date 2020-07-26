@@ -308,7 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TerrainBlock: {fileID: 917559050}
-  m_BlockVariants: 01000000020000000400000003000000
+  m_BlockVariants: 0000000001000000020000000400000003000000
   m_MaxRaycastDistance: 5
   m_RaycastLayerMask:
     serializedVersion: 2
@@ -692,10 +692,6 @@ MonoBehaviour:
     m_ActionId: 984014ef-e979-4c32-ae27-e26a47e2bcdc
     m_ActionName: Player/Sprint[/Keyboard/leftShift]
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 8124402f-9b60-4fcd-a0c9-72e8954f77a9
-    m_ActionName: Player/Crouch[/Keyboard/leftCtrl]
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1068939431}
         m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
@@ -755,6 +751,38 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 165f3a3c-5c7c-4cb4-aefc-cf1ac9f4991f
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1068939431}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: OnChangeWeapon
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 2d79ef56-713b-4f21-93c8-79941bc2403b
+    m_ActionName: Player/ChangeWeapon[/Mouse/scroll]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1068939431}
+        m_TargetAssemblyTypeName: InputManager, Assembly-CSharp
+        m_MethodName: OnQuickSave
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 1c47c4fe-7948-42c3-bb96-d6f78c2bce9e
+    m_ActionName: Player/QuickSave[/Keyboard/f5]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

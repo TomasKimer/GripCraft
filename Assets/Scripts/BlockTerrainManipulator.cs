@@ -28,9 +28,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		m_InputManager   = scene.InputManager;
 
 		m_TerrainBlock.Initialize(m_TerrainManager.BlockSettings);
-		m_TerrainBlock.SetBlockType(GetSelectedBlock());
-
-		ShowBlock(false);
+		UpdateSelectedBlock(true);
 	}
 
 	// MONOBEHAVIOUR INTERFACE
@@ -39,6 +37,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 	{
 		HandleBlockChange();
 
+		var selectedBlock = GetSelectedBlock();
 		var headTransform = m_Player.HeadTransform;
 		var        origin = headTransform.position;
 		var     direction = headTransform.forward;
@@ -47,22 +46,35 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 		if (Physics.Raycast(origin, direction, out var hitInfo, m_MaxRaycastDistance, m_RaycastLayerMask) == true)
 		{
-			var newBlockPosition = Vector3Int.FloorToInt(hitInfo.point + hitInfo.normal * 0.5f);
-
-			m_TerrainBlock.transform.position = newBlockPosition;
-			ShowBlock(true);
-
-			if (m_InputManager.Fire == true)
+			if (selectedBlock == EBlockType.None)
 			{
-				m_TerrainManager.AddBlock(newBlockPosition, GetSelectedBlock());
+				if (m_InputManager.Fire == true)
+				{
+					var damageBlockPosition = Vector3Int.FloorToInt(hitInfo.point - hitInfo.normal * 0.5f);
+
+					Debug.Log("Damage " + damageBlockPosition);
+				}
+			}
+			else
+			{
+				var newBlockPosition = Vector3Int.FloorToInt(hitInfo.point + hitInfo.normal * 0.5f);
+
+				m_TerrainBlock.transform.position = newBlockPosition;
+
+				if (m_InputManager.Fire == true)
+				{
+					m_TerrainManager.AddBlock(newBlockPosition, selectedBlock);
+				}
+
+				Debug.DrawLine(origin, hitInfo.point, Color.green);
+				Debug.DrawLine(hitInfo.point, hitInfo.point + hitInfo.normal * 0.5f, Color.green);
 			}
 
-			Debug.DrawLine(origin, hitInfo.point, Color.green);
-			Debug.DrawLine(hitInfo.point, hitInfo.point + hitInfo.normal * 0.5f, Color.green);
+			UpdateSelectedBlock(true);
 		}
 		else
 		{
-			ShowBlock(false);
+			UpdateSelectedBlock(false);
 
 			Debug.DrawLine(origin, origin + direction * m_MaxRaycastDistance, Color.red);
 		}
@@ -86,8 +98,20 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		{
 			m_SelectedBlockIdx = 0;
 		}
+	}
 
-		m_TerrainBlock.SetBlockType(GetSelectedBlock());
+	private void UpdateSelectedBlock(bool visible)
+	{
+		var selectedBlock = GetSelectedBlock();
+		if (selectedBlock == EBlockType.None)
+		{
+			ShowBlock(false);
+		}
+		else
+		{
+			m_TerrainBlock.SetBlockType(selectedBlock);
+			ShowBlock(visible);
+		}
 	}
 
 	private EBlockType GetSelectedBlock()
