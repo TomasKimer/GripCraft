@@ -17,7 +17,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 	private PlayerController      m_Player;
 	private BlockTerrainManager   m_TerrainManager;
 	private InputManager          m_InputManager;
-	private EBlockType            m_SelectedBlock;
+	private int                   m_SelectedBlockIdx;
 
 	// ISCENECOMPONENT INTERFACE
 
@@ -26,10 +26,9 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		m_Player         = scene.PlayerController;
 		m_TerrainManager = scene.TerrainManager;
 		m_InputManager   = scene.InputManager;
-		m_SelectedBlock  = m_BlockVariants[0];
 
 		m_TerrainBlock.Initialize(m_TerrainManager.BlockSettings);
-		m_TerrainBlock.SetBlockType(m_SelectedBlock);
+		m_TerrainBlock.SetBlockType(GetSelectedBlock());
 
 		ShowBlock(false);
 	}
@@ -38,6 +37,8 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 	private void Update()
 	{
+		HandleBlockChange();
+
 		var headTransform = m_Player.HeadTransform;
 		var        origin = headTransform.position;
 		var     direction = headTransform.forward;
@@ -53,7 +54,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 			if (m_InputManager.Fire == true)
 			{
-				m_TerrainManager.AddBlock(newBlockPosition, m_SelectedBlock);
+				m_TerrainManager.AddBlock(newBlockPosition, GetSelectedBlock());
 			}
 
 			Debug.DrawLine(origin, hitInfo.point, Color.green);
@@ -68,6 +69,31 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 	}
 
 	// PRIVATE METHODS
+
+	private void HandleBlockChange()
+	{
+		var change = m_InputManager.ChangeWeapon;
+		if (change == 0)
+			return;
+
+		m_SelectedBlockIdx += change;
+
+		if (m_SelectedBlockIdx < 0)
+		{
+			m_SelectedBlockIdx = m_BlockVariants.Length - 1;
+		}
+		else if (m_SelectedBlockIdx >= m_BlockVariants.Length)
+		{
+			m_SelectedBlockIdx = 0;
+		}
+
+		m_TerrainBlock.SetBlockType(GetSelectedBlock());
+	}
+
+	private EBlockType GetSelectedBlock()
+	{
+		return m_BlockVariants[m_SelectedBlockIdx];
+	}
 
 	private void ShowBlock(bool show)
 	{

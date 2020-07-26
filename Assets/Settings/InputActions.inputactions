@@ -38,14 +38,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Crouch",
-                    "type": "Button",
-                    "id": "8124402f-9b60-4fcd-a0c9-72e8954f77a9",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "Jump",
                     "type": "Button",
                     "id": "1e583dae-f6c7-4540-9ff3-3cf4edc2b41f",
@@ -58,6 +50,14 @@
                     "type": "Button",
                     "id": "9d613e04-727c-4709-ae05-3d8b1d77a8c3",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "ChangeWeapon",
+                    "type": "Value",
+                    "id": "2d79ef56-713b-4f21-93c8-79941bc2403b",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": ""
                 }
@@ -307,28 +307,6 @@
                 },
                 {
                     "name": "",
-                    "id": "ec200d7d-0004-42c1-98a5-46d8e9d57864",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Crouch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c09eeab2-56cd-4473-bb5d-30bcb701784f",
-                    "path": "<Keyboard>/leftCtrl",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Crouch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "48b4fea3-cc3c-4acf-8525-37270cff3896",
                     "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
@@ -368,6 +346,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "350b9f44-6c1a-4fce-9387-f2ef9ccd1832",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "NormalizeVector2,InvertVector2(invertX=false)",
+                    "groups": "Keyboard&Mouse",
+                    "action": "ChangeWeapon",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

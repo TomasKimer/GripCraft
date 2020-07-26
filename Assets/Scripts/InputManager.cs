@@ -5,11 +5,12 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 {
 	// PUBLIC MEMBERS
 
-	public Vector3 MoveDir   { get; private set; }
-	public Vector2 LookDelta { get; private set; }
-	public bool    Jump      { get; private set; }
-	public bool    Sprint    { get; private set; }
-	public bool    Fire      { get; private set; }
+	public Vector3 MoveDir      { get; private set; }
+	public Vector2 LookDelta    { get; private set; }
+	public bool    Jump         { get; private set; }
+	public bool    Sprint       { get; private set; }
+	public bool    Fire         { get; private set; }
+	public int     ChangeWeapon { get; private set; }
 
 	// PRIVATE MEMBERS
 
@@ -28,7 +29,8 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 			Jump = false;
 		}
 
-		Fire = false;
+		Fire         = false;
+		ChangeWeapon = 0;
 	}
 
 	// PLAYER INPUT INTERFACE
@@ -63,5 +65,10 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 	public void OnFire(InputAction.CallbackContext context)
 	{
 		Fire = context.ReadValue<float>() > 0f;
+	}
+
+	public void OnChangeWeapon(InputAction.CallbackContext context)
+	{
+		ChangeWeapon = (int)context.ReadValue<Vector2>().y;
 	}
 }
