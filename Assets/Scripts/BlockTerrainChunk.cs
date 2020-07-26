@@ -15,7 +15,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	private struct BlockData
 	{
 		public EBlockType BlockType;
-//		public float      CurrentHealt; // TODO
+//		public float      CurrentHealth; // TODO
 	}
 
 	// PRIVATE MEMBERS
@@ -66,7 +66,6 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	{
 		if (x < 0 || y < 0 || z < 0)
 			return;
-
 		if (x >= m_Width || y >= m_Height || z >= m_Width)
 			return;
 
@@ -222,7 +221,6 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	{
 		if (x < 0 || y < 0 || z < 0)
 			return true;
-
 		if (x >= m_Width || y >= m_Height || z >= m_Width)
 			return true;
 

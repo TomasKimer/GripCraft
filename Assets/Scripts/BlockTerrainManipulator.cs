@@ -9,7 +9,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 	[SerializeField] EBlockType[] m_BlockVariants      = null;
 
 	[Header("Raycast setup")]
-	[SerializeField] float        m_MaxRaycastDistance = 10f;
+	[SerializeField] float        m_MaxRaycastDistance = 5f;
 	[SerializeField] LayerMask    m_RaycastLayerMask   = default;
 
 	// PRIVATE MEMBERS
@@ -30,6 +30,8 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 		m_TerrainBlock.Initialize(m_TerrainManager.BlockSettings);
 		m_TerrainBlock.SetBlockType(m_SelectedBlock);
+
+		ShowBlock(false);
 	}
 
 	// MONOBEHAVIOUR INTERFACE
@@ -47,6 +49,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 			var newBlockPosition = Vector3Int.FloorToInt(hitInfo.point + hitInfo.normal * 0.5f);
 
 			m_TerrainBlock.transform.position = newBlockPosition;
+			ShowBlock(true);
 
 			if (m_InputManager.Fire == true)
 			{
@@ -58,7 +61,20 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		}
 		else
 		{
+			ShowBlock(false);
+
 			Debug.DrawLine(origin, origin + direction * m_MaxRaycastDistance, Color.red);
 		}
+	}
+
+	// PRIVATE METHODS
+
+	private void ShowBlock(bool show)
+	{
+		var go = m_TerrainBlock.gameObject;
+		if (go.activeSelf == show)
+			return;
+
+		go.SetActive(show);
 	}
 }

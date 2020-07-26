@@ -309,7 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TerrainBlock: {fileID: 917559050}
   m_BlockVariants: 01000000020000000400000003000000
-  m_MaxRaycastDistance: 10
+  m_MaxRaycastDistance: 5
   m_RaycastLayerMask:
     serializedVersion: 2
     m_Bits: 256

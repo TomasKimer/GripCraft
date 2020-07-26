@@ -37,22 +37,16 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	// PUBLIC METHODS
 
-	public void AddBlock(Vector2Int chunkPos, int posX, int posY, int posZ, EBlockType blockType)
-	{
-		var chunk = m_ActiveChunks[chunkPos];
-
-		chunk.SetBlock(posX, posY, posZ, blockType);
-	}
-
 	public void AddBlock(Vector3Int position, EBlockType blockType)
 	{
-		var chunkPosition = new Vector2Int(position.x / m_ChunkWidth, position.z / m_ChunkWidth);
+		var chunkPosition = GetChunkPosition(position);
+		if (m_ActiveChunks.TryGetValue(chunkPosition, out var chunk) == false)
+			return;
 
 		var positionInChunkX = position.x - chunkPosition.x * m_ChunkWidth;
 		var positionInChunkY = position.y;
 		var positionInChunkZ = position.z - chunkPosition.y * m_ChunkWidth;
 
-		var chunk = m_ActiveChunks[chunkPosition];
 		chunk.SetBlock(positionInChunkX, positionInChunkY, positionInChunkZ, blockType);
 	}
 
@@ -76,7 +70,7 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	private void UpdateChunks()
 	{
-		var playerChunkPosition = GetPlayerChunkPosition();
+		var playerChunkPosition = GetChunkPosition(m_PlayerTransform.position);
 		if (playerChunkPosition == m_PlayerChunkPosition)
 			return;
 
@@ -139,11 +133,11 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		return newChunk;
 	}
 
-	private Vector2Int GetPlayerChunkPosition()
+	private Vector2Int GetChunkPosition(Vector3 position)
 	{
 		return new Vector2Int(
-			Mathf.FloorToInt(m_PlayerTransform.position.x / m_ChunkWidth),
-			Mathf.FloorToInt(m_PlayerTransform.position.z / m_ChunkWidth)
+			Mathf.FloorToInt(position.x / m_ChunkWidth),
+			Mathf.FloorToInt(position.z / m_ChunkWidth)
 		);
 	}
 }
