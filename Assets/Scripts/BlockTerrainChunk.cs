@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 using IndexFormat = UnityEngine.Rendering.IndexFormat;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshCollider))]
@@ -11,13 +9,18 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	private const int VERTICES_PER_FACE = 4;
 
-	// PRIVATE STRUCTS
+	// PUBLIC STRUCTS
 
-	private struct BlockData
+	public struct BlockData
 	{
 		public EBlockType BlockType;
 		public float      Health;
 	}
+
+	// PUBLIC MEMBERS
+
+	public  BlockData[,,]     Blocks  => m_BlockData;
+	public  bool              Changed { get; private set; }
 
 	// PRIVATE MEMBERS
 
@@ -36,7 +39,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	// PUBLIC METHODS
 
-	public void Initialize(int width, int height, float perlinScale, Vector2 perlinOffset, BlockSettings blockSettings)
+	public void Initialize(int width, int height, float perlinScale, Vector2 perlinOffset, BlockSettings blockSettings, BlockData [,,] blockData = null)
 	{
 		m_Width         = width;
 		m_Height        = height;
@@ -44,7 +47,16 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		m_PerlinOffset  = perlinOffset;
 		m_BlockSettings = blockSettings;
 
-		m_BlockData     = new BlockData[m_Width, m_Height, m_Width];
+		if (blockData == null)
+		{
+			m_BlockData = new BlockData[m_Width, m_Height, m_Width];
+			Changed     = false;
+		}
+		else
+		{
+			m_BlockData = blockData;
+			Changed     = true;
+		}
 	}
 
 	public void GenerateHeightmap(int posX, int posZ)
@@ -77,8 +89,10 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 		m_BlockData[x, y, z].BlockType = blockType;
 		m_BlockData[x, y, z].Health    = m_BlockSettings.GetBlockInfo(blockType).Health;
-
+		
 		UpdateMesh();
+
+		Changed = true;
 	}
 
 	public void DamageBlock(int x, int y, int z, float damage)
@@ -96,6 +110,8 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		}
 
 		m_BlockData[x, y, z].Health = Mathf.Max(0f, health);
+
+		Changed = true;
 	}
 
 	public void UpdateMesh()
@@ -223,7 +239,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 		var fraction = height / (float)m_Height;
 
-		if (fraction < 0.2f) // TODO values from settings
+		if (fraction < 0.2f) // TODO move to settings
 			return EBlockType.Stone;
 		if (fraction < 0.4f)
 			return EBlockType.Dirt;

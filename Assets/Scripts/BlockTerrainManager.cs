@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using BlockData = BlockTerrainChunk.BlockData;
 
 sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 {
@@ -32,8 +33,9 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	private Transform                  m_PlayerTransform;
 	private Vector2Int                 m_PlayerChunkPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-	private Dictionary<Vector2Int, BlockTerrainChunk> m_ActiveChunks   = new Dictionary<Vector2Int, BlockTerrainChunk>();
-	private List<Vector2Int>                          m_ChunksToRemove = new List<Vector2Int>();
+	private Dictionary<Vector2Int, BlockTerrainChunk> m_ActiveChunks    = new Dictionary<Vector2Int, BlockTerrainChunk>();
+	private List<Vector2Int>                          m_ChunksToRemove  = new List<Vector2Int>();
+	private Dictionary<Vector2Int, BlockData[,,]>     m_CachedChunkData = new Dictionary<Vector2Int, BlockData[,,]>();
 
 	// PUBLIC METHODS
 
@@ -115,6 +117,11 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		foreach (var chunkToRemove in m_ChunksToRemove)
 		{
 			var chunk = m_ActiveChunks[chunkToRemove];
+			if (chunk.Changed == true)
+			{
+				m_CachedChunkData.Add(chunkToRemove, chunk.Blocks);
+			}
+
 			Destroy(chunk.gameObject);
 			m_ActiveChunks.Remove(chunkToRemove);
 		}
@@ -128,11 +135,21 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		var worldZ = chunkPos.y * m_ChunkWidth;
 
 		var newChunk = Instantiate(m_TerrainChunk, new Vector3(worldX, 0, worldZ), Quaternion.identity, transform);
-		newChunk.gameObject.SetActive(true);
 		newChunk.name = $"Chunk {chunkPos}";
+		newChunk.gameObject.SetActive(true);
+		
+		m_CachedChunkData.TryGetValue(chunkPos, out var cachedData);
+		newChunk.Initialize(m_ChunkWidth, m_ChunkHeight, m_PerlinScale, m_PerlinOffset, m_BlockSettings, cachedData);
 
-		newChunk.Initialize(m_ChunkWidth, m_ChunkHeight, m_PerlinScale, m_PerlinOffset, m_BlockSettings);
-		newChunk.GenerateHeightmap(worldX, worldZ);
+		if (cachedData == null)
+		{
+			newChunk.GenerateHeightmap(worldX, worldZ);
+		}
+		else
+		{
+			m_CachedChunkData.Remove(chunkPos);
+		}
+
 		newChunk.UpdateMesh();
 
 		return newChunk;
