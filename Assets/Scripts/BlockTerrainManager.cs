@@ -39,15 +39,20 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	public void AddBlock(Vector3Int position, EBlockType blockType)
 	{
-		var chunkPosition = GetChunkPosition(position);
-		if (m_ActiveChunks.TryGetValue(chunkPosition, out var chunk) == false)
+		var (chunk, positionInChunkX, positionInChunkY, positionInChunkZ) = GetTargetChunk(position);
+		if  (chunk == null)
 			return;
 
-		var positionInChunkX = position.x - chunkPosition.x * m_ChunkWidth;
-		var positionInChunkY = position.y;
-		var positionInChunkZ = position.z - chunkPosition.y * m_ChunkWidth;
-
 		chunk.SetBlock(positionInChunkX, positionInChunkY, positionInChunkZ, blockType);
+	}
+
+	public void DamageBlock(Vector3Int position, float damage)
+	{
+		var (chunk, positionInChunkX, positionInChunkY, positionInChunkZ) = GetTargetChunk(position);
+		if  (chunk == null)
+			return;
+
+		chunk.DamageBlock(positionInChunkX, positionInChunkY, positionInChunkZ, damage);
 	}
 
 	// ISCENECOMPONENT INTERFACE
@@ -131,6 +136,18 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 		newChunk.UpdateMesh();
 
 		return newChunk;
+	}
+
+	private (BlockTerrainChunk chunk, int x, int y, int z) GetTargetChunk(Vector3Int position)
+	{
+		var chunkPosition = GetChunkPosition(position);
+		m_ActiveChunks.TryGetValue(chunkPosition, out var chunk);
+
+		var positionInChunkX = position.x - chunkPosition.x * m_ChunkWidth;
+		var positionInChunkY = position.y;
+		var positionInChunkZ = position.z - chunkPosition.y * m_ChunkWidth;
+
+		return (chunk, positionInChunkX, positionInChunkY, positionInChunkZ);
 	}
 
 	private Vector2Int GetChunkPosition(Vector3 position)

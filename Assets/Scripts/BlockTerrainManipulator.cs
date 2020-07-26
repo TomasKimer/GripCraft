@@ -12,6 +12,9 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 	[SerializeField] float        m_MaxRaycastDistance = 5f;
 	[SerializeField] LayerMask    m_RaycastLayerMask   = default;
 
+	[Header("Damage setup")]
+	[SerializeField] float        m_DamagePerSecond    = 25f;
+
 	// PRIVATE MEMBERS
 
 	private PlayerController      m_Player;
@@ -48,11 +51,11 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		{
 			if (selectedBlock == EBlockType.None)
 			{
-				if (m_InputManager.Fire == true)
+				if (m_InputManager.DamageBlock == true)
 				{
 					var damageBlockPosition = Vector3Int.FloorToInt(hitInfo.point - hitInfo.normal * 0.5f);
 
-					Debug.Log("Damage " + damageBlockPosition);
+					m_TerrainManager.DamageBlock(damageBlockPosition, m_DamagePerSecond * Time.deltaTime);
 				}
 			}
 			else
@@ -61,7 +64,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 				m_TerrainBlock.transform.position = newBlockPosition;
 
-				if (m_InputManager.Fire == true)
+				if (m_InputManager.PlaceBlock == true)
 				{
 					m_TerrainManager.AddBlock(newBlockPosition, selectedBlock);
 				}

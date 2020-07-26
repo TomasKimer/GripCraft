@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -15,7 +16,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	private struct BlockData
 	{
 		public EBlockType BlockType;
-//		public float      CurrentHealth; // TODO
+		public float      Health;
 	}
 
 	// PRIVATE MEMBERS
@@ -56,7 +57,14 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 				for (int y = 0; y < m_Height; ++y)
 				{
+					var blockType = GetBlockTypeForHeight(y, height);
+
 					m_BlockData[x, y, z].BlockType = GetBlockTypeForHeight(y, height);
+
+					if (blockType != EBlockType.None)
+					{
+						m_BlockData[x, y, z].Health = m_BlockSettings.GetBlockInfo(blockType).Health;
+					}
 				}
 			}
 		}
@@ -64,14 +72,30 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	public void SetBlock(int x, int y, int z, EBlockType blockType)
 	{
-		if (x < 0 || y < 0 || z < 0)
-			return;
-		if (x >= m_Width || y >= m_Height || z >= m_Width)
+		if (CheckBounds(x, y, z) == false)
 			return;
 
 		m_BlockData[x, y, z].BlockType = blockType;
+		m_BlockData[x, y, z].Health    = m_BlockSettings.GetBlockInfo(blockType).Health;
 
 		UpdateMesh();
+	}
+
+	public void DamageBlock(int x, int y, int z, float damage)
+	{
+		if (CheckBounds(x, y, z) == false)
+			return;
+
+		var health = m_BlockData[x, y, z].Health;
+		health -= damage;
+
+		if (health <= 0f)
+		{
+			m_BlockData[x, y, z].BlockType = EBlockType.None;
+			UpdateMesh();
+		}
+
+		m_BlockData[x, y, z].Health = Mathf.Max(0f, health);
 	}
 
 	public void UpdateMesh()
@@ -219,12 +243,20 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	private bool IsNone(int x, int y, int z)
 	{
-		if (x < 0 || y < 0 || z < 0)
-			return true;
-		if (x >= m_Width || y >= m_Height || z >= m_Width)
+		if (CheckBounds(x, y, z) == false)
 			return true;
 
 		return m_BlockData[x, y, z].BlockType == EBlockType.None;
+	}
+
+	private bool CheckBounds(int x, int y, int z)
+	{
+		if (x < 0 || y < 0 || z < 0)
+			return false;
+		if (x >= m_Width || y >= m_Height || z >= m_Width)
+			return false;
+
+		return true;
 	}
 
 	private void SetMeshIndexFormat(int vertexCount)

@@ -65,13 +65,15 @@ sealed class BlockSettings : ScriptableObject
 		public readonly Vector2[] SideUVs;
 		public readonly Vector2[] BottomUVs;
 		public readonly int       FromHeight;
+		public readonly float     Health;
 
-		public BlockInfo(Vector2[] topUVs, Vector2[] sideUVs, Vector2[] bottomUVs, int fromHeight)
+		public BlockInfo(Vector2[] topUVs, Vector2[] sideUVs, Vector2[] bottomUVs, int fromHeight, float health)
 		{
 			TopUVs     = topUVs;
 			SideUVs    = sideUVs;
 			BottomUVs  = bottomUVs;
 			FromHeight = fromHeight;
+			Health     = health;
 		}
 	}
 
@@ -95,6 +97,7 @@ sealed class BlockSettings : ScriptableObject
 		public ETile      TileSide   = ETile.Grass;
 		public ETile      TileBottom = ETile.Grass;
 		public int        FromHeight = 0;
+		public float      Health     = 100f;
 	}
 
 	[System.Serializable]
@@ -134,7 +137,8 @@ sealed class BlockSettings : ScriptableObject
 			GetUVs(settings.TileTop),
 			GetUVs(settings.TileSide),
 			GetUVs(settings.TileBottom),
-			settings.FromHeight
+			settings.FromHeight,
+			settings.Health
 		);
 
 		m_CachedBlockInfos[blockType] = newBlockInfo;

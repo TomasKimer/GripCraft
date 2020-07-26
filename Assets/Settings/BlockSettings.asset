@@ -18,21 +18,25 @@ MonoBehaviour:
     TileSide: 1
     TileBottom: 3
     FromHeight: 0
+    Health: 25
   - BlockType: 2
     TileTop: 3
     TileSide: 3
     TileBottom: 3
     FromHeight: 0
+    Health: 50
   - BlockType: 3
     TileTop: 4
     TileSide: 5
     TileBottom: 3
     FromHeight: 0
+    Health: 10
   - BlockType: 4
     TileTop: 2
     TileSide: 2
     TileBottom: 2
     FromHeight: 0
+    Health: 100
   m_TileSize: 16
   m_TileUVOffset: 0.001
   m_TileSettings:

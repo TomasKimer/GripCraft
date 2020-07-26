@@ -9,7 +9,8 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 	public Vector2 LookDelta    { get; private set; }
 	public bool    Jump         { get; private set; }
 	public bool    Sprint       { get; private set; }
-	public bool    Fire         { get; private set; }
+	public bool    PlaceBlock   { get; private set; }
+	public bool    DamageBlock  { get; private set; }
 	public int     ChangeWeapon { get; private set; }
 
 	// SIGNALS
@@ -34,7 +35,7 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 			Jump = false;
 		}
 
-		Fire         = false;
+		PlaceBlock   = false;
 		ChangeWeapon = 0;
 	}
 
@@ -69,7 +70,7 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 
 	public void OnFire(InputAction.CallbackContext context)
 	{
-		Fire = context.ReadValue<float>() > 0f;
+		PlaceBlock = DamageBlock = context.ReadValue<float>() > 0f;
 	}
 
 	public void OnChangeWeapon(InputAction.CallbackContext context)

@@ -313,6 +313,7 @@ MonoBehaviour:
   m_RaycastLayerMask:
     serializedVersion: 2
     m_Bits: 256
+  m_DamagePerSecond: 25
 --- !u!1 &901013579
 GameObject:
   m_ObjectHideFlags: 0
