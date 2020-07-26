@@ -24,9 +24,9 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	// PUBLIC MEMBERS
 
+	public  BlockSettings              BlockSettings => m_BlockSettings;
 	public  int                        ChunkWidth    => m_ChunkWidth;
 	public  int                        ChunkHeight   => m_ChunkHeight;
-	public  BlockSettings              BlockSettings => m_BlockSettings;
 
 	// PRIVATE MEMBERS
 
@@ -55,6 +55,30 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 			return;
 
 		chunk.DamageBlock(positionInChunkX, positionInChunkY, positionInChunkZ, damage);
+	}
+
+	public void Save(Persistence.SaveData saveData)
+	{
+		saveData.ChunkWidth    = m_ChunkWidth;
+		saveData.ChunkHeight   = m_ChunkHeight;
+		saveData.PerlinScale   = m_PerlinScale;
+		saveData.PerlinOffsetX = m_PerlinOffset.x;
+		saveData.PerlinOffsetY = m_PerlinOffset.y;
+		saveData.ChangedBlocks = Persistence.CreateBlockSaveData(m_ActiveChunks, m_CachedChunkData);
+	}
+
+	public void Load(Persistence.SaveData saveData)
+	{
+		m_ChunkWidth     = saveData.ChunkWidth;
+		m_ChunkHeight    = saveData.ChunkHeight;
+		m_PerlinScale    = saveData.PerlinScale;
+		m_PerlinOffset.x = saveData.PerlinOffsetX;
+		m_PerlinOffset.y = saveData.PerlinOffsetY;
+
+		if (saveData.ChangedBlocks != null)
+		{
+			m_CachedChunkData = Persistence.ConvertFromSaveData(saveData.ChangedBlocks);
+		}
 	}
 
 	// ISCENECOMPONENT INTERFACE

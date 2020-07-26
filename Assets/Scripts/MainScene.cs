@@ -7,6 +7,11 @@ interface ISceneComponent
 
 sealed class MainScene : MonoBehaviour
 {
+	// CONFIGURATION
+
+	[SerializeField] string    m_SaveFile     = "quicksave.sav";
+	[SerializeField] bool      m_LoadFromSave = false;
+
 	// PUBLIC MEMBERS
 
 	public PlayerController    PlayerController { get; private set; }
@@ -19,16 +24,23 @@ sealed class MainScene : MonoBehaviour
 	{
 		InitializeSceneComponents();
 
-		SetPlayerPosition();
+		if (m_LoadFromSave == true)
+		{
+			LoadFromFile();
+		}
+		else
+		{
+			SetDefaultPosition();
+		}
 
 		InputManager.QuickSave += OnQuickSave;
 	}
 
-	// HANLDERS
+	// HANDLERS
 
 	private void OnQuickSave()
 	{
-		Debug.Log("TODO QuickSave");
+		SaveToFile();
 	}
 
 	// PRIVATE METHODS
@@ -44,9 +56,39 @@ sealed class MainScene : MonoBehaviour
 		System.Array.ForEach(sceneComponents, component => component.Initialize(this));
 	}
 
-	private void SetPlayerPosition()
+	private void SetDefaultPosition()
 	{
 		PlayerController.transform.position = new Vector3(TerrainManager.ChunkWidth / 2, TerrainManager.ChunkHeight + 10, TerrainManager.ChunkWidth / 2);
+	}
+
+	private void SaveToFile()
+	{
+		var playerPosition = PlayerController.transform.position;
+
+		var saveData = new Persistence.SaveData
+		{
+			PlayerPosX    = playerPosition.x,
+			PlayerPosY    = playerPosition.y,
+			PlayerPosZ    = playerPosition.z
+		};
+
+		TerrainManager.Save(saveData);
+
+		var path = Persistence.Save(m_SaveFile, saveData);
+
+		Debug.Log("Saved to " + path);
+	}
+
+	private bool LoadFromFile()
+	{
+		var saveData = Persistence.Load(m_SaveFile);
+		if (saveData == null)
+			return false;
+
+		PlayerController.transform.position = new Vector3(saveData.PlayerPosX, saveData.PlayerPosY, saveData.PlayerPosZ);
+		TerrainManager.Load(saveData);
+
+		return true;
 	}
 
 	// HELPERS

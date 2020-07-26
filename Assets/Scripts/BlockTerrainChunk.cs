@@ -11,6 +11,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 
 	// PUBLIC STRUCTS
 
+	[System.Serializable]
 	public struct BlockData
 	{
 		public EBlockType BlockType;
@@ -33,9 +34,9 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	private MeshFilter        m_MeshFilter;
 	private MeshCollider      m_MeshCollider;
 	private Mesh              m_Mesh;
-	private List<Vector3>     m_Vertices     = new List<Vector3>();
-	private List<int>         m_Indices      = new List<int>();
-	private List<Vector2>     m_UVs          = new List<Vector2>();
+	private List<Vector3>     m_Vertices = new List<Vector3>();
+	private List<int>         m_Indices  = new List<int>();
+	private List<Vector2>     m_UVs      = new List<Vector2>();
 
 	// PUBLIC METHODS
 

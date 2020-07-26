@@ -17,7 +17,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
 	// PRIVATE MEMBERS
 
-	private PlayerController      m_Player;
+	private Transform             m_HeadTransform;
 	private BlockTerrainManager   m_TerrainManager;
 	private InputManager          m_InputManager;
 	private int                   m_SelectedBlockIdx;
@@ -26,7 +26,7 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 
     void ISceneComponent.Initialize(MainScene scene)
 	{
-		m_Player         = scene.PlayerController;
+		m_HeadTransform  = scene.PlayerController.HeadTransform;
 		m_TerrainManager = scene.TerrainManager;
 		m_InputManager   = scene.InputManager;
 
@@ -41,9 +41,8 @@ sealed class BlockTerrainManipulator : MonoBehaviour, ISceneComponent
 		HandleBlockChange();
 
 		var selectedBlock = GetSelectedBlock();
-		var headTransform = m_Player.HeadTransform;
-		var        origin = headTransform.position;
-		var     direction = headTransform.forward;
+		var        origin = m_HeadTransform.position;
+		var     direction = m_HeadTransform.forward;
 
 		Debug.DrawLine(origin, origin + direction * m_MaxRaycastDistance);
 

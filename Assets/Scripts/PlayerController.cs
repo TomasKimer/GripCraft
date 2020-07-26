@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, ISceneComponent
+sealed class PlayerController : MonoBehaviour, ISceneComponent
 {
 	// CONFIGURATION
 

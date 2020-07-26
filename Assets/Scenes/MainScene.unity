@@ -568,7 +568,7 @@ MonoBehaviour:
   m_TerrainChunk: {fileID: 1730905363}
   m_ChunkWidth: 16
   m_ChunkHeight: 32
-  m_ChunkDistance: 10
+  m_ChunkDistance: 5
   m_PerlinScale: 0.02945
   m_PerlinOffset: {x: 73.73, y: 6562}
 --- !u!1 &1068939428
@@ -1052,6 +1052,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61c352afcf7f074c81ed4a9f96adb09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SaveFile: quicksave.sav
+  m_LoadFromSave: 0
 --- !u!4 &1610878266
 Transform:
   m_ObjectHideFlags: 0
