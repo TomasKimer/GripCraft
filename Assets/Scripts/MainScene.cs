@@ -24,13 +24,15 @@ sealed class MainScene : MonoBehaviour
 	{
 		InitializeSceneComponents();
 
+		var loadedFromSave = false;
 		if (m_LoadFromSave == true)
 		{
-			LoadFromFile();
+			loadedFromSave = LoadFromFile();
 		}
-		else
+
+		if (loadedFromSave == false)
 		{
-			SetDefaultPosition();
+			SetDefaultPlayerPosition();
 		}
 
 		InputManager.QuickSave += OnQuickSave;
@@ -54,11 +56,6 @@ sealed class MainScene : MonoBehaviour
 		TerrainManager   = FindComponent<BlockTerrainManager>(sceneComponents);
 
 		System.Array.ForEach(sceneComponents, component => component.Initialize(this));
-	}
-
-	private void SetDefaultPosition()
-	{
-		PlayerController.transform.position = new Vector3(TerrainManager.ChunkWidth / 2, TerrainManager.ChunkHeight + 10, TerrainManager.ChunkWidth / 2);
 	}
 
 	private void SaveToFile()
@@ -89,6 +86,11 @@ sealed class MainScene : MonoBehaviour
 		TerrainManager.Load(saveData);
 
 		return true;
+	}
+
+	private void SetDefaultPlayerPosition()
+	{
+		PlayerController.transform.position = new Vector3(TerrainManager.ChunkWidth / 2, TerrainManager.ChunkHeight + 10, TerrainManager.ChunkWidth / 2);
 	}
 
 	// HELPERS
