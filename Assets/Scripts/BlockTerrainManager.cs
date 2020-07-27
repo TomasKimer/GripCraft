@@ -16,7 +16,7 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	[Range(8, 128)]
 	[SerializeField] int               m_ChunkHeight   = 32;
 	[Range(1, 32)]
-	[SerializeField] int               m_ChunkDistance = 10;
+	[SerializeField] int               m_ChunkDistance = 5;
 
 	[Header("Noise setup")]
 	[SerializeField] float             m_PerlinScale   = 0.025f;
@@ -33,9 +33,10 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 	private Transform                  m_PlayerTransform;
 	private Vector2Int                 m_PlayerChunkPosition = new Vector2Int(int.MinValue, int.MinValue);
 
-	private Dictionary<Vector2Int, BlockTerrainChunk> m_ActiveChunks    = new Dictionary<Vector2Int, BlockTerrainChunk>();
-	private List<Vector2Int>                          m_ChunksToRemove  = new List<Vector2Int>();
-	private Dictionary<Vector2Int, BlockData[,,]>     m_CachedChunkData = new Dictionary<Vector2Int, BlockData[,,]>();
+	private Dictionary<Vector2Int, BlockTerrainChunk> m_ActiveChunks       = new Dictionary<Vector2Int, BlockTerrainChunk>();
+	private List<Vector2Int>                          m_ChunksToRemove     = new List<Vector2Int>();
+	private Dictionary<Vector2Int, BlockData[,,]>     m_CachedChunkData    = new Dictionary<Vector2Int, BlockData[,,]>();
+	private List<BlockTerrainChunk>                   m_CachedChunkObjects = new List<BlockTerrainChunk>();
 
 	// PUBLIC METHODS
 
@@ -107,12 +108,14 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 		m_PlayerChunkPosition = playerChunkPosition;
 		
-		CreateNewChunks();
 		RemoveFarChunks();
+		CreateNewChunks();
 	}
 
 	private void CreateNewChunks()
 	{
+		int count = 0;
+
 		for (int x = m_PlayerChunkPosition.x - m_ChunkDistance; x <= m_PlayerChunkPosition.x + m_ChunkDistance; ++x)
 		{
 			for (int z = m_PlayerChunkPosition.y - m_ChunkDistance; z <= m_PlayerChunkPosition.y + m_ChunkDistance; ++z)
@@ -122,6 +125,8 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 				if (m_ActiveChunks.ContainsKey(chunkPosition) == false)
 				{
 					m_ActiveChunks[chunkPosition] = CreateChunk(chunkPosition);
+
+					count += 1;
 				}
 			}
 		}
@@ -146,7 +151,9 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 				m_CachedChunkData.Add(chunkToRemove, chunk.Blocks);
 			}
 
-			Destroy(chunk.gameObject);
+			chunk.Deinitialize();
+
+			m_CachedChunkObjects.Add(chunk);
 			m_ActiveChunks.Remove(chunkToRemove);
 		}
 
@@ -155,12 +162,26 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	private BlockTerrainChunk CreateChunk(Vector2Int chunkPos)
 	{
-		var worldX = chunkPos.x * m_ChunkWidth;
-		var worldZ = chunkPos.y * m_ChunkWidth;
+		var   worldX = chunkPos.x * m_ChunkWidth;
+		var   worldZ = chunkPos.y * m_ChunkWidth;
+		var worldPos = new Vector3(worldX, 0, worldZ);
 
-		var newChunk = Instantiate(m_TerrainChunk, new Vector3(worldX, 0, worldZ), Quaternion.identity, transform);
+		BlockTerrainChunk newChunk;
+		if (m_CachedChunkObjects.Count > 0)
+		{
+			var lastIdx = m_CachedChunkObjects.Count - 1;
+			newChunk = m_CachedChunkObjects[lastIdx];
+			m_CachedChunkObjects.RemoveAt(lastIdx);
+
+			newChunk.transform.position = worldPos;
+		}
+		else
+		{
+			newChunk = Instantiate(m_TerrainChunk, worldPos, Quaternion.identity, transform);
+			newChunk.gameObject.SetActive(true);
+		}
+
 		newChunk.name = $"Chunk {chunkPos}";
-		newChunk.gameObject.SetActive(true);
 		
 		m_CachedChunkData.TryGetValue(chunkPos, out var cachedData);
 		newChunk.Initialize(m_ChunkWidth, m_ChunkHeight, m_PerlinScale, m_PerlinOffset, m_BlockSettings, cachedData);

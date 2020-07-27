@@ -60,6 +60,13 @@ sealed class BlockTerrainChunk : MonoBehaviour
 		}
 	}
 
+	public void Deinitialize()
+	{
+		m_Mesh.Clear();
+		m_BlockData     = null;
+		m_BlockSettings = null;
+	}
+
 	public void GenerateHeightmap(int posX, int posZ)
 	{
 		for (int x = 0; x < m_Width; ++x)
