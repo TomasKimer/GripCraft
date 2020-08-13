@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CharacterController))]
 sealed class PlayerController : MonoBehaviour, ISceneComponent
 {
 	// CONFIGURATION
@@ -28,11 +29,10 @@ sealed class PlayerController : MonoBehaviour, ISceneComponent
 
 	void ISceneComponent.Initialize(MainScene scene)
 	{
-		m_InputManager        = scene.InputManager;
 		m_CharacterController = GetComponent<CharacterController>();
+		m_InputManager        = scene.InputManager;
 
-		Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible   = false;
+		m_InputManager.LockCursor(true);
 	}
 
 	// MONOBEHAVIOUR INTERFACE

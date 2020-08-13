@@ -114,8 +114,6 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 
 	private void CreateNewChunks()
 	{
-		int count = 0;
-
 		for (int x = m_PlayerChunkPosition.x - m_ChunkDistance; x <= m_PlayerChunkPosition.x + m_ChunkDistance; ++x)
 		{
 			for (int z = m_PlayerChunkPosition.y - m_ChunkDistance; z <= m_PlayerChunkPosition.y + m_ChunkDistance; ++z)
@@ -125,8 +123,6 @@ sealed class BlockTerrainManager : MonoBehaviour, ISceneComponent
 				if (m_ActiveChunks.ContainsKey(chunkPosition) == false)
 				{
 					m_ActiveChunks[chunkPosition] = CreateChunk(chunkPosition);
-
-					count += 1;
 				}
 			}
 		}

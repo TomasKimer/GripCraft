@@ -59,7 +59,7 @@ sealed class BlockSettings : ScriptableObject
 
 	// PUBLIC CLASSES
 
-	public class BlockInfo
+	public sealed class BlockInfo
 	{
 		public readonly Vector2[] TopUVs;
 		public readonly Vector2[] SideUVs;
@@ -88,7 +88,7 @@ sealed class BlockSettings : ScriptableObject
 	}
 
 	[System.Serializable]
-	private class BlockSetup
+	private sealed class BlockSetup
 	{
 		public EBlockType BlockType  = EBlockType.Grass;
 		public ETile      TileTop    = ETile.Grass;
@@ -98,7 +98,7 @@ sealed class BlockSettings : ScriptableObject
 	}
 
 	[System.Serializable]
-	private class TileSetup
+	private sealed class TileSetup
 	{
 		public ETile      Tile     = ETile.Grass;
 		public Vector2Int Position = Vector2Int.zero;

@@ -9,7 +9,7 @@ static class Persistence
 	// CLASSES
 
 	[System.Serializable]
-	public class SaveData
+	public sealed class SaveData
 	{
 		public float   PlayerPosX, PlayerPosY, PlayerPosZ; // Vector3 not marked as serializable
 		public int     ChunkWidth;

@@ -22,6 +22,14 @@ sealed class InputManager : MonoBehaviour, ISceneComponent
 	private float  m_JumpTime;
 	private int    m_QuickSaveFrame;
 
+	// PUBLIC METHODS
+
+	public void LockCursor(bool value)
+	{
+		Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
+		Cursor.visible   = value == false;
+	}
+
 	// ISCENECOMPONENT INTERFACE
 
 	void ISceneComponent.Initialize(MainScene scene) { }

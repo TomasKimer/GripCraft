@@ -79,7 +79,7 @@ sealed class BlockTerrainChunk : MonoBehaviour
 				{
 					var blockType = GetBlockTypeForHeight(y, height);
 
-					m_BlockData[x, y, z].BlockType = GetBlockTypeForHeight(y, height);
+					m_BlockData[x, y, z].BlockType = blockType;
 
 					if (blockType != EBlockType.None)
 					{
@@ -106,6 +106,8 @@ sealed class BlockTerrainChunk : MonoBehaviour
 	public void DamageBlock(int x, int y, int z, float damage)
 	{
 		if (CheckBounds(x, y, z) == false)
+			return;
+		if (y == 0)
 			return;
 
 		var health = m_BlockData[x, y, z].Health;
